@@ -54,10 +54,7 @@ class FastTravelAction : AnAction() {
             SwingUtilities.invokeLater {
                 graphics.drawString(entry.key.toString(), point.x, point.y)
             }
-//todo draw identifiers
         }
-
-        // todo find all interesting things in the current editor window
     }
 
     private fun mapElementsToIdentifiers(elements: Set<PsiElement>): Map<Char, PsiElement> {
