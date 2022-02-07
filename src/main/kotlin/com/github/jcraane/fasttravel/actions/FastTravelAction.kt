@@ -3,6 +3,8 @@ package com.github.jcraane.fasttravel.actions
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.editor.actionSystem.EditorActionManager
 import com.intellij.openapi.editor.actionSystem.TypedActionHandler
@@ -10,7 +12,6 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiRecursiveElementWalkingVisitor
 import com.intellij.psi.util.elementType
 import java.awt.Color
-import java.awt.Font
 import javax.swing.SwingUtilities
 
 
@@ -24,37 +25,14 @@ class FastTravelAction : AnAction() {
             return
         }
 
-        val elements = mutableSetOf<PsiElement>()
-        val psiFile = actionEvent.getData(CommonDataKeys.PSI_FILE)
-        psiFile?.accept(object : PsiRecursiveElementWalkingVisitor() {
-            override fun visitElement(element: PsiElement) {
-                super.visitElement(element)
-                val type = element.elementType.toString()
-                when (type) {
-                    "IDENTIFIER" -> {
-                        elements += element
-                    }
-                    "VALUE_ARGUMENT" -> {
-                        elements += element
-                    }
-                    "REGULAR_STRING_PART" -> {
-                        elements += element
-                    }
-//                    else -> println("$type = ${element.text}")
-                }
-            }
-        })
-
-        val mapping = mapElementsToIdentifiers(elements)
-        setupFastTravel(mapping)
-        val graphics = editor.component.graphics
-        graphics.color = Color.YELLOW
-        mapping.forEach { entry ->
-            val point = editor.visualPositionToXY(editor.offsetToVisualPosition(entry.value.textOffset));
-            SwingUtilities.invokeLater {
-                graphics.drawString(entry.key.toString(), point.x, point.y)
-            }
+        actionEvent.getData(CommonDataKeys.PSI_FILE)?.let { psiFile ->
+            val showFastTravelIdentifiers = ShowFastTravelIdentifiers(editor, psiFile)
+            ApplicationManager.getApplication().runReadAction(showFastTravelIdentifiers)
         }
+//        editor.document.text (get text from document)
+        //editor.foldingModel
+        //FoldRegion @NotNull [] getAllFoldRegions();
+        //boolean isOffsetCollapsed(int offset);
     }
 
     private fun mapElementsToIdentifiers(elements: Set<PsiElement>): Map<Char, PsiElement> {
@@ -88,3 +66,4 @@ class FastTravelAction : AnAction() {
         val identifiers = numbers + lowerCase + upperCase
     }
 }
+
