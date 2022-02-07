@@ -25,6 +25,8 @@ class ShowFastTravelIdentifiers(private val editor: Editor, private val psiFile:
         val nonFoldedVisibleText = getNonFoldedVisualLines(previousFoldingRange, lines, text, verticalScrollOffset)
 
         println(nonFoldedVisibleText.joinToString("\n"))
+        val mapping = mapLinesToIdentifiers(nonFoldedVisibleText)
+        println(mapping)
 //        extractPsiElementsForFastTravel(elements)
     }
 
@@ -61,12 +63,28 @@ class ShowFastTravelIdentifiers(private val editor: Editor, private val psiFile:
         return nonFoldedVisibleText
     }
 
+    private fun mapLinesToIdentifiers(content: List<String>): Map<String, String> {
+        val mapping = mutableMapOf<String, String>()
+        content.forEachIndexed { index, line ->
+            if (line.trim().length > MIN_LENGTH_BEFORE_SPLIT) {
+                line.split(Regex("[ ]+")).filter { it.length > MIN_WORD_LENGTH }.forEachIndexed { indexW, word ->
+                    if (index + indexW < FastTravelAction.identifiers.size) {
+                        mapping[FastTravelAction.identifiers[index + indexW]] = word
+                    }
+                }
+            } else {
+                mapping[FastTravelAction.identifiers[index]] = line
+            }
+        }
+        return mapping
+    }
+
     private fun extractPsiElementsForFastTravel(elements: MutableSet<PsiElement>) {
         psiFile.accept(object : PsiRecursiveElementWalkingVisitor() {
             override fun visitElement(element: PsiElement) {
                 super.visitElement(element)
                 val type = element.elementType.toString()
-                if (element.text.length > MIN_LENGTH) {
+                if (element.text.length > MIN_WORD_LENGTH) {
                     when (type) {
                         "IDENTIFIER" -> {
                             elements += element
@@ -111,6 +129,7 @@ class ShowFastTravelIdentifiers(private val editor: Editor, private val psiFile:
         val upperCase = ('A'..'Z').toList().map { it.toString() }
         val lowerCase = ('a'..'z').toList().map { it.toString() }
         val identifiers = numbers + lowerCase + upperCase
-        private const val MIN_LENGTH = 7
+        private const val MIN_WORD_LENGTH = 7
+        private const val MIN_LENGTH_BEFORE_SPLIT = 15
     }
 }
