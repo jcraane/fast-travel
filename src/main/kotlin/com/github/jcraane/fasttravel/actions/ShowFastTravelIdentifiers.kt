@@ -21,7 +21,7 @@ class ShowFastTravelIdentifiers(
         println("fastTravelKeyListener = $fastTravelKeyListener")
         val fastTravelIdentifierPanel = FastTravelIdentifierPanel(editor, mapping)
 
-        fastTravelKeyListener?.removeFastTravelIdentifierPanel()
+        fastTravelKeyListener.removeFastTravelIdentifierPanel()
 
         fastTravelKeyListener.fastTravelMapping = mapping
         fastTravelKeyListener.fastTravelIdentifierPanel = fastTravelIdentifierPanel
@@ -68,7 +68,7 @@ class ShowFastTravelIdentifiers(
         val upperCase = ('A'..'Z').toList().map { it.toString() }
         val lowerCase = ('a'..'z').toList().map { it.toString() }
         val identifiers = lowerCase + upperCase + numbers
-        private const val MIN_WORD_LENGTH = 7
+        private const val MIN_WORD_LENGTH = 5
         private const val MIN_LENGTH_BEFORE_SPLIT = 15
     }
 }

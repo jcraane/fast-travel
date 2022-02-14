@@ -8,6 +8,7 @@ import java.awt.event.KeyListener
 
 class FastTravelKeyListener(
     private val editor: Editor,
+    private val fastTravelAction: FastTravelAction,
 ) : KeyListener {
 
     var fastTravelIdentifierPanel: FastTravelIdentifierPanel? = null
@@ -17,6 +18,7 @@ class FastTravelKeyListener(
         e.consume()
         fastTravelToIdentifier(e.keyChar)
         removeFastTravelIdentifierPanel()
+        fastTravelAction.restoreKeyListeners()
     }
 
     private fun fastTravelToIdentifier(keyChar: Char) {
@@ -30,6 +32,7 @@ class FastTravelKeyListener(
     override fun keyPressed(e: KeyEvent) {
         if (KeyEvent.VK_ESCAPE == e.keyChar.code) {
             removeFastTravelIdentifierPanel()
+            fastTravelAction.restoreKeyListeners()
         }
     }
 
