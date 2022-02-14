@@ -13,14 +13,11 @@ class ShowFastTravelIdentifiers(
     private val fastTravelKeyListener: FastTravelKeyListener,
 ) : Runnable {
     override fun run() {
-//        todo add keylistener for the fast travel actions
         val visibleTextRange = editor.getVisibleTextRange()
         val visibleText = editor.document.getText(visibleTextRange)
         val mapping = getFastTravelMappings(visibleText, visibleTextRange)
 
-        println("fastTravelKeyListener = $fastTravelKeyListener")
         val fastTravelIdentifierPanel = FastTravelIdentifierPanel(editor, mapping)
-
         fastTravelKeyListener.removeFastTravelIdentifierPanel()
 
         fastTravelKeyListener.fastTravelMapping = mapping
@@ -36,11 +33,13 @@ class ShowFastTravelIdentifiers(
         visibleTextRange: TextRange,
     ): Map<String, Int> {
 //        todo optimize splits and word length (make it even configurable?)
+//        todo ignore folded areas
         val interestingIdentifiers = visibleText
             .split(' ', '.')
             .filter { it.isNotBlank() }
             .filter { it.length > MIN_WORD_LENGTH }
             .map { it.trim('\n') }
+            .toSet()
 
         var identifierIndex = 0
         val mapping = interestingIdentifiers.map { identifier ->
