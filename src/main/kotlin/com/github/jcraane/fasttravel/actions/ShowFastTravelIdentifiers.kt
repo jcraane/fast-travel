@@ -63,12 +63,11 @@ class ShowFastTravelIdentifiers(
     companion object {
         private val LOG = logger<FastTravelAction>()
 
-        val numbers = (0..9).toList().map { it.toString() }
-        val upperCase = ('A'..'Z').toList().map { it.toString() }
-        val lowerCase = ('a'..'z').toList().map { it.toString() }
+        private val numbers = (0..9).toList().map { it.toString() }
+        private val upperCase = ('A'..'Z').toList().map { it.toString() }
+        private val lowerCase = ('a'..'z').toList().map { it.toString() }
         val identifiers = lowerCase + upperCase + numbers
         private const val MIN_WORD_LENGTH = 5
-        private const val MIN_LENGTH_BEFORE_SPLIT = 15
     }
 }
 
