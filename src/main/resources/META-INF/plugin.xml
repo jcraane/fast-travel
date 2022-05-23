@@ -19,7 +19,7 @@
     <actions>
         <group id="fastTravel" text="Fast Travel" description="fastTravel">
             <action id="fastTravel.jumper" class="com.github.jcraane.fasttravel.actions.FastTravelAction" text="Jumper" description="Jumper">
-                <keyboard-shortcut first-keystroke="alt m" keymap="$default"/>
+                <keyboard-shortcut first-keystroke="alt l" keymap="$default"/>
             </action>
         </group>
     </actions>
