@@ -32,7 +32,7 @@ class FastTravelIdentifierPanel(
             val offset = entry.value
             val fontRect = fontMetrics.getStringBounds(entry.key, graphics)
             drawBackground(graphics, getX(offset), getY(offset), background, fontRect)
-            drawMarkerChar(graphics, getX(offset), getY(offset) + font.size * 0.9, entry.key, foreground)
+            drawMarkerChar(graphics, getX(offset), getY(offset) + font.size * 1.2, entry.key, foreground)
         }
 
         super.paint(graphics)

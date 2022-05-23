@@ -17,8 +17,6 @@ class ShowFastTravelIdentifiers(
         val allText = editor.document.getText(visibleTextRange)
         val visibleText = removeFoldedRegions(allText)
 
-//        todo offsets are not correct yet because we removed the folded regions.
-        // Text can be removed before AND after the identifier, need to take this into account
         val mapping = getFastTravelMappings(allText, visibleText, visibleTextRange)
 
         val fastTravelIdentifierPanel = FastTravelIdentifierPanel(editor, mapping)
