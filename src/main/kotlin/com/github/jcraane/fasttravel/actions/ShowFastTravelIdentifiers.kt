@@ -64,6 +64,7 @@ class ShowFastTravelIdentifiers(
         val interestingIdentifiers = visibleText
             .split(' ', '.')
             .filter { it.isNotBlank() }
+            .filter { ignoredIdentifiers.contains(it).not() }
             .filter { it.length > MIN_WORD_LENGTH }
             .map { it.trim('\n') }
             .toSet()
@@ -100,6 +101,7 @@ class ShowFastTravelIdentifiers(
         private val upperCase = ('A'..'Z').toList().map { it.toString() }
         private val lowerCase = ('a'..'z').toList().map { it.toString() }
         val identifiers = lowerCase + upperCase + numbers
+        val ignoredIdentifiers = listOf("import")
         private const val MIN_WORD_LENGTH = 5
     }
 }
