@@ -1,10 +1,11 @@
 package com.github.jcraane.fasttravel.actions
 
+import com.github.jcraane.fasttravel.extensions.allIndicesOf
 import com.github.jcraane.fasttravel.extensions.getVisibleTextRange
 import com.github.jcraane.fasttravel.renderer.FastTravelIdentifierPanel
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.util.NlsSafe
+import com.intellij.openapi.editor.FoldRegion
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.impl.source.tree.injected.changesHandler.range
 
@@ -17,7 +18,7 @@ class ShowFastTravelIdentifiers(
         val allText = editor.document.getText(visibleTextRange)
         val visibleText = removeFoldedRegions(allText)
 
-        val mapping = getFastTravelMappings(allText, visibleText, visibleTextRange)
+        val mapping = getFastTravelMappings(allText, visibleText.first, visibleText.second, visibleTextRange)
 
         val fastTravelIdentifierPanel = FastTravelIdentifierPanel(editor, mapping)
         fastTravelKeyListener.removeFastTravelIdentifierPanel()
@@ -30,30 +31,36 @@ class ShowFastTravelIdentifiers(
         editor.contentComponent.repaint()
     }
 
-    private fun removeFoldedRegions(visibleText: @NlsSafe String): @NlsSafe String {
-        var visibleText1 = visibleText
-        editor.foldingModel.allFoldRegions.forEach { foldRegion ->
-            val startOffset = foldRegion.range.startOffset
-            val endOffset = foldRegion.range.endOffset
+    private fun removeFoldedRegions(visibleText: String): Pair<String, List<FoldRegion>> {
+        var mutableText = visibleText
 
-            val line = editor.yToVisualLine(startOffset)
-            if (line < editor.document.lineCount) {
-                val lineStartOffset = editor.document.getLineStartOffset(line)
+        val foldedRegions = editor.foldingModel.allFoldRegions
+            .filter { it.isExpanded.not() }
 
-                if (foldRegion.isExpanded.not()) {
-                    visibleText1 = visibleText1.removeRange(lineStartOffset..endOffset)
+//        todo This does not work yet with more than 1 folded region
+        foldedRegions
+            .forEach { foldedRegion ->
+                val startOffset = foldedRegion.range.startOffset
+                val line = editor.yToVisualLine(startOffset)
+
+                if (line < editor.document.lineCount) {
+                    val endOffset = foldedRegion.range.endOffset
+                    val lineStartOffset = editor.document.getLineStartOffset(line)
+                    mutableText = mutableText.replace(visibleText.substring(lineStartOffset, endOffset), "")
                 }
             }
-        }
-        return visibleText1
+
+        return mutableText to foldedRegions
     }
 
     //        todo optimize splits and word length (make it even configurable?)
     private fun getFastTravelMappings(
         unfoldedText: String,
         visibleText: String,
+        foldedRegions: List<FoldRegion>,
         visibleTextRange: TextRange,
     ): Map<String, Int> {
+        // Identifiers are based on the visible text (without the folded regions)
         // Ignore special characters link < " etc.
         val interestingIdentifiers = visibleText
             .split(' ', '.')
@@ -64,16 +71,21 @@ class ShowFastTravelIdentifiers(
 
         var identifierIndex = 0
         val mapping = interestingIdentifiers.map { identifier ->
-            var index = unfoldedText.indexOf(identifier)
+            val indices = unfoldedText.allIndicesOf(identifier)
             val fastTravelers = mutableListOf<FastTravel>()
 
-            while (index > 0) {
+            val indicesPresentInVisibleText = indices.filter { index ->
+                foldedRegions.none { foldedRegion ->
+                    foldedRegion.range.contains(index)
+                }
+            }
+
+            indicesPresentInVisibleText.map { index ->
                 val offset = visibleTextRange.startOffset + index
                 if (identifierIndex < identifiers.size) {
                     fastTravelers += FastTravel(identifiers[identifierIndex], offset)
                 }
                 identifierIndex++
-                index = unfoldedText.indexOf(identifier, startIndex = index + 1)
             }
 
             fastTravelers
