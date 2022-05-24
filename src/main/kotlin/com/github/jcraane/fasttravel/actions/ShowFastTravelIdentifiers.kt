@@ -37,7 +37,6 @@ class ShowFastTravelIdentifiers(
         val foldedRegions = editor.foldingModel.allFoldRegions
             .filter { it.isExpanded.not() }
 
-//        todo This does not work yet with more than 1 folded region
         foldedRegions
             .forEach { foldedRegion ->
                 val startOffset = foldedRegion.range.startOffset
