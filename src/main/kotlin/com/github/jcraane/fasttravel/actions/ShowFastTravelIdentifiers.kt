@@ -69,6 +69,7 @@ class ShowFastTravelIdentifiers(
             .map { it.trim('\n') }
             .toSet()
 
+//        todo sort all indices ascending so identifiers also appear ascending in the text
         var identifierIndex = 0
         val mapping = interestingIdentifiers.map { identifier ->
             val indices = unfoldedText.allIndicesOf(identifier)

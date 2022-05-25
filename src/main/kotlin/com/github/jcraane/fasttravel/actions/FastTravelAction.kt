@@ -43,14 +43,5 @@ class FastTravelAction : AnAction() {
             editor?.contentComponent?.addKeyListener(keyListener)
         }
     }
-
-    companion object {
-        private val LOG = logger<FastTravelAction>()
-
-        val numbers = (0..9).toList().map { it.toString() }
-        val upperCase = ('A'..'Z').toList().map { it.toString() }
-        val lowerCase = ('a'..'z').toList().map { it.toString() }
-        val identifiers = numbers + lowerCase + upperCase
-    }
 }
 
