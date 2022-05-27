@@ -4,7 +4,7 @@ import com.github.jcraane.fasttravel.extensions.allIndicesOf
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.impl.source.tree.injected.changesHandler.range
 
-// todo optimize splits and word length (make it even configurable?)
+// todo optimize splits and word length (make it even configurable in settings?)
 // todo Use modifiers to increase keys to press (or combination of keys like AB). But then you cannot have a single key of A
 // todo Exclude comments (we might still need the psi here to exclude them)
 // todo long file is not mapped correctly in the window (Add testcase for this)
@@ -31,26 +31,31 @@ class IdentifierToFastTravelMapper {
             .map { unfoldedText.allIndicesOf(it) }
             .flatten().sorted()
 
-        var identifierIndex = 0
-        val mapping = sortedIndicesForIdentifiers.map { indexForIdentifier ->
-            val fastTravelers = mutableListOf<FastTravel>()
-
-            val indexPresentInVisibleRange = foldedRegionRanges.none { foldedRegion ->
-                foldedRegion.range.contains(indexForIdentifier)
-            }
-
-            if (indexPresentInVisibleRange) {
-                val offset = visibleTextRange.startOffset + indexForIdentifier
-                if (identifierIndex < ShowFastTravelIdentifiers.identifiers.size) {
-                    fastTravelers += FastTravel(ShowFastTravelIdentifiers.identifiers[identifierIndex], offset)
-                }
-                identifierIndex++
-            }
-
-            fastTravelers
-        }.flatten()
+        val mapping = sortedIndicesForIdentifiers.mapIndexedNotNull { index, indexForIdentifier ->
+            mapIdentifierToFastTravelAction(foldedRegionRanges, indexForIdentifier, index, visibleTextRange)
+        }
 
         return mapping.groupBy { it.identifier }.mapValues { it.value.first().offset }
+    }
+
+    private fun mapIdentifierToFastTravelAction(
+        foldedRegionRanges: List<TextRange>,
+        indexForIdentifier: Int,
+        index: Int,
+        visibleTextRange: TextRange,
+    ): FastTravel? {
+        val indexPresentInVisibleRange = foldedRegionRanges.none { foldedRegion ->
+            foldedRegion.range.contains(indexForIdentifier)
+        }
+
+        return if (indexPresentInVisibleRange.not()
+            || index >= ShowFastTravelIdentifiers.identifiers.size
+        ) {
+            val offset = visibleTextRange.startOffset + indexForIdentifier
+            FastTravel(ShowFastTravelIdentifiers.identifiers[index], offset)
+        } else {
+            null
+        }
     }
 
     companion object {
