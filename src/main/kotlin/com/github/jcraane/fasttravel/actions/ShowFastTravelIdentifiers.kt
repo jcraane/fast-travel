@@ -13,12 +13,19 @@ class ShowFastTravelIdentifiers(
     private val editor: Editor,
     private val fastTravelKeyListener: FastTravelKeyListener,
 ) : Runnable {
+    private val fastTravelMapper = IdentifierToFastTravelMapper()
+
     override fun run() {
         val visibleTextRange = editor.getVisibleTextRange()
         val allText = editor.document.getText(visibleTextRange)
         val visibleText = removeFoldedRegions(allText)
 
-        val mapping = getFastTravelMappings(allText, visibleText.first, visibleText.second, visibleTextRange)
+        val mapping = fastTravelMapper.getFastTravelMappings(
+            allText,
+            visibleText.first,
+            visibleText.second.map { it.range },
+            visibleTextRange
+        )
 
         val fastTravelIdentifierPanel = FastTravelIdentifierPanel(editor, mapping)
         fastTravelKeyListener.removeFastTravelIdentifierPanel()
@@ -45,54 +52,15 @@ class ShowFastTravelIdentifiers(
                 if (line < editor.document.lineCount) {
                     val endOffset = foldedRegion.range.endOffset
                     val lineStartOffset = editor.document.getLineStartOffset(line)
-                    mutableText = mutableText.replace(visibleText.substring(lineStartOffset, endOffset), "")
+
+                    val isFoldedRegionInBoundsOfVisibleText = endOffset < visibleText.length
+                    if (isFoldedRegionInBoundsOfVisibleText) {
+                        mutableText = mutableText.replace(visibleText.substring(lineStartOffset, endOffset), "")
+                    }
                 }
             }
 
         return mutableText to foldedRegions
-    }
-
-    //        todo optimize splits and word length (make it even configurable?)
-    private fun getFastTravelMappings(
-        unfoldedText: String,
-        visibleText: String,
-        foldedRegions: List<FoldRegion>,
-        visibleTextRange: TextRange,
-    ): Map<String, Int> {
-        // Identifiers are based on the visible text (without the folded regions)
-        // Ignore special characters link < " etc.
-        val interestingIdentifiers = visibleText
-            .split(' ', '.')
-            .filter { it.isNotBlank() }
-            .filter { ignoredIdentifiers.contains(it).not() }
-            .filter { it.length > MIN_WORD_LENGTH }
-            .map { it.trim('\n') }
-            .toSet()
-
-//        todo sort all indices ascending so identifiers also appear ascending in the text
-        var identifierIndex = 0
-        val mapping = interestingIdentifiers.map { identifier ->
-            val indices = unfoldedText.allIndicesOf(identifier)
-            val fastTravelers = mutableListOf<FastTravel>()
-
-            val indicesPresentInVisibleText = indices.filter { index ->
-                foldedRegions.none { foldedRegion ->
-                    foldedRegion.range.contains(index)
-                }
-            }
-
-            indicesPresentInVisibleText.map { index ->
-                val offset = visibleTextRange.startOffset + index
-                if (identifierIndex < identifiers.size) {
-                    fastTravelers += FastTravel(identifiers[identifierIndex], offset)
-                }
-                identifierIndex++
-            }
-
-            fastTravelers
-        }.flatten()
-
-        return mapping.groupBy { it.identifier }.mapValues { it.value.first().offset }
     }
 
     companion object {
@@ -103,7 +71,6 @@ class ShowFastTravelIdentifiers(
         private val lowerCase = ('a'..'z').toList().map { it.toString() }
         val identifiers = lowerCase + upperCase + numbers
         val ignoredIdentifiers = listOf("import")
-        private const val MIN_WORD_LENGTH = 5
     }
 }
 
