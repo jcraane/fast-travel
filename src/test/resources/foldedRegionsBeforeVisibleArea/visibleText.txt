@@ -1,0 +1,40 @@
+package com.github.jcraane.fasttravel.actions
+
+
+
+class ShowFastTravelIdentifiers(private val editor: Editor, private val psiFile: PsiFile) : Runnable {
+    override fun run() {
+        val elements = mutableSetOf<PsiElement>()
+        psiFile.accept(object : PsiRecursiveElementWalkingVisitor() {
+            override fun visitElement(element: PsiElement) {
+                super.visitElement(element)
+                val type = element.elementType.toString()
+                when (type) {
+                    "IDENTIFIER" -> {
+                        elements += element
+                    }
+                    "VALUE_ARGUMENT" -> {
+                        elements += element
+                    }
+                    "REGULAR_STRING_PART" -> {
+                        elements += element
+                    }
+//                    else -> println("$type = ${element.text}")
+                }
+            }
+        })
+
+        val mapping = mapElementsToIdentifiers(elements)
+//        setupFastTravel(mapping)
+        val graphics = editor.component.graphics
+        graphics.color = Color.YELLOW
+        mapping.forEach { entry ->
+            val point = editor.visualPositionToXY(editor.offsetToVisualPosition(entry.value.textOffset));
+            ApplicationManager.getApplication().invokeLater({
+                graphics.drawString(entry.key.toString(), point.x, point.y)
+            }, ModalityState.stateForComponent(editor.component))
+            /*SwingUtilities.invokeLater {
+                graphics.drawString(entry.key.toString(), point.x, point.y)
+            }*/
+        }
+    }

@@ -1,6 +1,7 @@
 package com.github.jcraane.fasttravel.actions
 
 import com.intellij.openapi.util.TextRange
+import org.junit.Assert
 import org.junit.Test
 
 class IdentifierToFastTravelMapperTest {
@@ -21,11 +22,25 @@ class IdentifierToFastTravelMapperTest {
             foldedRegionRanges = emptyList(),
             visibleTextRange = TextRange(0, text.length)
         )
-        println(mappings)
+
+        Assert.assertEquals(mappings.values.sorted(), mappings.values.map { it })
     }
 
+    @Test
     fun mapIdentifiersInTextWithFoldedRegionsBeforeVisibleArea() {
+        val unfoldedText =
+            IdentifierToFastTravelMapperTest::class.java.getResource("/foldedRegionsBeforeVisibleArea/unfoldedText.txt").readText()
+        val visibleText = IdentifierToFastTravelMapperTest::class.java.getResource("/foldedRegionsBeforeVisibleArea/visibleText.txt")
+            .readText()
 
+        val mappings = mapper.getFastTravelMappings(
+            unfoldedText = unfoldedText,
+            visibleText = visibleText,
+            foldedRegionRanges = listOf(TextRange(54, 435)),
+            visibleTextRange = TextRange(0, 1986)
+        )
+
+        println(mappings)
     }
 
     fun mapIdentifiersInTextWithFoldedRegionsBeforeAndAfterVisibleArea() {

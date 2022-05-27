@@ -4,8 +4,10 @@ import com.github.jcraane.fasttravel.extensions.allIndicesOf
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.impl.source.tree.injected.changesHandler.range
 
-//        todo sort all indices ascending so identifiers also appear ascending in the text
-//        todo optimize splits and word length (make it even configurable?)
+// todo optimize splits and word length (make it even configurable?)
+// todo Use modifiers to increase keys to press (or combination of keys like AB). But then you cannot have a single key of A
+// todo Exclude comments (we might still need the psi here to exclude them)
+// todo long file is not mapped correctly in the window (Add testcase for this)
 class IdentifierToFastTravelMapper {
     /**
      * Maps identifiers from the visible text to [FastTravel] actions.
@@ -24,21 +26,21 @@ class IdentifierToFastTravelMapper {
             .filter { ShowFastTravelIdentifiers.ignoredIdentifiers.contains(it).not() }
             .filter { it.length > MIN_WORD_LENGTH }
             .map { it.trim('\n') }
-            .toSet()
+
+        val sortedIndicesForIdentifiers = interestingIdentifiers
+            .map { unfoldedText.allIndicesOf(it) }
+            .flatten().sorted()
 
         var identifierIndex = 0
-        val mapping = interestingIdentifiers.map { identifier ->
-            val indices = unfoldedText.allIndicesOf(identifier)
+        val mapping = sortedIndicesForIdentifiers.map { indexForIdentifier ->
             val fastTravelers = mutableListOf<FastTravel>()
 
-            val indicesPresentInVisibleText = indices.filter { index ->
-                foldedRegionRanges.none { foldedRegion ->
-                    foldedRegion.range.contains(index)
-                }
+            val indexPresentInVisibleRange = foldedRegionRanges.none { foldedRegion ->
+                foldedRegion.range.contains(indexForIdentifier)
             }
 
-            indicesPresentInVisibleText.map { index ->
-                val offset = visibleTextRange.startOffset + index
+            if (indexPresentInVisibleRange) {
+                val offset = visibleTextRange.startOffset + indexForIdentifier
                 if (identifierIndex < ShowFastTravelIdentifiers.identifiers.size) {
                     fastTravelers += FastTravel(ShowFastTravelIdentifiers.identifiers[identifierIndex], offset)
                 }
