@@ -18,24 +18,48 @@ class IdentifierToFastTravelMapper {
         foldedRegionRanges: List<TextRange>,
         visibleTextRange: TextRange,
     ): Map<String, Int> {
-        // Identifiers are based on the visible text (without the folded regions)
-        // Ignore special characters link < " etc.
+        // Identifiers are based on the visible text (without the folded regions) to make sure the indexes are based on the correct
+        // offsets int he editor. Ignore special characters link < " etc.
         val interestingIdentifiers = visibleText
             .split(' ', '.')
+            .asSequence()
             .filter { it.isNotBlank() }
             .filter { ShowFastTravelIdentifiers.ignoredIdentifiers.contains(it).not() }
             .filter { it.length > MIN_WORD_LENGTH }
+            .distinct()
             .map { it.trim('\n') }
+            .toList()
 
         val sortedIndicesForIdentifiers = interestingIdentifiers
+            .asSequence()
             .map { unfoldedText.allIndicesOf(it) }
-            .flatten().sorted()
+            .flatten()
+            .filter { index ->
+                indexNotPresentInFoldedRegions(foldedRegionRanges, index)
+            }
+            .distinct().sorted()
+            .toList()
 
         val mapping = sortedIndicesForIdentifiers.mapIndexedNotNull { index, indexForIdentifier ->
             mapIdentifierToFastTravelAction(foldedRegionRanges, indexForIdentifier, index, visibleTextRange)
         }
 
         return mapping.groupBy { it.identifier }.mapValues { it.value.first().offset }
+    }
+
+    /**
+     * We want to exclude all indices present in the folded regions since they are not visible in the editor.
+     */
+    private fun indexNotPresentInFoldedRegions(foldedRegionRanges: List<TextRange>, index: Int) =
+        foldedRegionRanges.none() { it.contains(index) }
+
+    private fun indexNotInFoldedRegion(
+        indices: List<Int>,
+        foldedRegionRanges: List<TextRange>,
+    ) = indices.none { index ->
+        foldedRegionRanges.none { range ->
+            range.contains(index).not()
+        }
     }
 
     private fun mapIdentifierToFastTravelAction(
