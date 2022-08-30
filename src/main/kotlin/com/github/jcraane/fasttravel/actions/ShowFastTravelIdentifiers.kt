@@ -22,7 +22,7 @@ class ShowFastTravelIdentifiers(
 
         val foldedRegionRanges = visibleText.second
             .map { it.range }
-            .filter { it.contains(visibleTextRange) }
+            .filter { visibleTextRange.contains(it) }
 
         val mapping = fastTravelMapper.getFastTravelMappings(
             allText,

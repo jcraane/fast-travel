@@ -5,9 +5,9 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.impl.source.tree.injected.changesHandler.range
 
 // todo optimize splits and word length (make it even configurable in settings?)
-// todo Use modifiers to increase keys to press (or combination of keys like AB). But then you cannot have a single key of A
+// todo Use modifiers to increase keys to press (or combination of keys like AB). But then you cannot have a single key of A. Modifier
+//  key for example is Alt|Option+char. How do we visualize this? With the symbol of the key itself (⌥)?
 // todo Exclude comments (we might still need the psi here to exclude them)
-// todo long file is not mapped correctly in the window (Add testcase for this)
 class IdentifierToFastTravelMapper {
     /**
      * Maps identifiers from the visible text to [FastTravel] actions.
@@ -81,6 +81,6 @@ class IdentifierToFastTravelMapper {
     }
 
     companion object {
-        private const val MIN_WORD_LENGTH = 5
+        private const val MIN_WORD_LENGTH = 6
     }
 }
