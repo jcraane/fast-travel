@@ -18,8 +18,6 @@ class IdentifierToFastTravelMapper {
         foldedRegionRanges: List<TextRange>,
         visibleTextRange: TextRange,
     ): Map<String, Int> {
-        // Identifiers are based on the visible text (without the folded regions) to make sure the indexes are based on the correct
-        // offsets in the editor. Ignore special characters link < " etc.
         val interestingIdentifiers = visibleText
             .split(' ', '.')
             .asSequence()
@@ -28,7 +26,10 @@ class IdentifierToFastTravelMapper {
             .filter { ShowFastTravelIdentifiers.ignoredIdentifiers.contains(it).not() }
             .filter { it.length > MIN_WORD_LENGTH }
             .map { it.trim('\n') }
+            .map { removeStartAndEndParenthesis(it) }
             .toList()
+        // Identifiers are based on the visible text (without the folded regions) to make sure the indexes are based on the correct
+        // offsets in the editor. Ignore special characters link < " etc.
 
         val sortedIndicesForIdentifiers = interestingIdentifiers
             .asSequence()
@@ -45,6 +46,15 @@ class IdentifierToFastTravelMapper {
         }
 
         return mapping.groupBy { it.identifier }.mapValues { it.value.first().offset }
+    }
+
+    private fun removeStartAndEndParenthesis(it: String): String {
+        return it.trim('(', ')')
+        /*return if (it.startsWith("(")) {
+            it.removeRange(0, 1)
+        } else {
+            it
+        }*/
     }
 
     /**
@@ -81,6 +91,6 @@ class IdentifierToFastTravelMapper {
     }
 
     companion object {
-        private const val MIN_WORD_LENGTH = 6
+        private const val MIN_WORD_LENGTH = 5
     }
 }
