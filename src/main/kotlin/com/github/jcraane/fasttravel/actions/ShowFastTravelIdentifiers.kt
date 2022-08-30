@@ -1,6 +1,5 @@
 package com.github.jcraane.fasttravel.actions
 
-import com.github.jcraane.fasttravel.extensions.allIndicesOf
 import com.github.jcraane.fasttravel.extensions.getVisibleTextRange
 import com.github.jcraane.fasttravel.renderer.FastTravelIdentifierPanel
 import com.intellij.openapi.diagnostic.logger
@@ -18,11 +17,10 @@ class ShowFastTravelIdentifiers(
     override fun run() {
         val visibleTextRange = editor.getVisibleTextRange()
         val allText = editor.document.getText(visibleTextRange)
-        val visibleText = removeFoldedRegions(allText)
+        val visibleText = removeFoldedRegions(allText, visibleTextRange)
 
         val foldedRegionRanges = visibleText.second
             .map { it.range }
-            .filter { visibleTextRange.contains(it) }
 
         val mapping = fastTravelMapper.getFastTravelMappings(
             allText,
@@ -42,10 +40,11 @@ class ShowFastTravelIdentifiers(
         editor.contentComponent.repaint()
     }
 
-    private fun removeFoldedRegions(visibleText: String): Pair<String, List<FoldRegion>> {
+    private fun removeFoldedRegions(visibleText: String, visibleTextRange: TextRange): Pair<String, List<FoldRegion>> {
         var mutableText = visibleText
 
         val foldedRegions = editor.foldingModel.allFoldRegions
+            .filter { visibleTextRange.contains(it) }
             .filter { it.isExpanded.not() }
 
         foldedRegions
@@ -58,7 +57,7 @@ class ShowFastTravelIdentifiers(
                     val lineStartOffset = editor.document.getLineStartOffset(line)
 
                     val isFoldedRegionInBoundsOfVisibleText = (lineStartOffset + endOffset) < visibleText.length
-                    if (isFoldedRegionInBoundsOfVisibleText) {
+                    if (isFoldedRegionInBoundsOfVisibleText && endOffset > lineStartOffset) {
                         mutableText = mutableText.replace(visibleText.substring(lineStartOffset, endOffset), "")
                     }
                 }

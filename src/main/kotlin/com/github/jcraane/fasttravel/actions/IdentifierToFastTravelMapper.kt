@@ -23,10 +23,10 @@ class IdentifierToFastTravelMapper {
         val interestingIdentifiers = visibleText
             .split(' ', '.')
             .asSequence()
+            .distinct()
             .filter { it.isNotBlank() }
             .filter { ShowFastTravelIdentifiers.ignoredIdentifiers.contains(it).not() }
             .filter { it.length > MIN_WORD_LENGTH }
-            .distinct()
             .map { it.trim('\n') }
             .toList()
 
