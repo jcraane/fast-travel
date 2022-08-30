@@ -20,10 +20,14 @@ class ShowFastTravelIdentifiers(
         val allText = editor.document.getText(visibleTextRange)
         val visibleText = removeFoldedRegions(allText)
 
+        val foldedRegionRanges = visibleText.second
+            .map { it.range }
+            .filter { it.contains(visibleTextRange) }
+
         val mapping = fastTravelMapper.getFastTravelMappings(
             allText,
             visibleText.first,
-            visibleText.second.map { it.range },
+            foldedRegionRanges,
             visibleTextRange
         )
 

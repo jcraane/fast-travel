@@ -19,7 +19,7 @@ class IdentifierToFastTravelMapper {
         visibleTextRange: TextRange,
     ): Map<String, Int> {
         // Identifiers are based on the visible text (without the folded regions) to make sure the indexes are based on the correct
-        // offsets int he editor. Ignore special characters link < " etc.
+        // offsets in the editor. Ignore special characters link < " etc.
         val interestingIdentifiers = visibleText
             .split(' ', '.')
             .asSequence()
