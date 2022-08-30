@@ -53,7 +53,7 @@ class ShowFastTravelIdentifiers(
                     val endOffset = foldedRegion.range.endOffset
                     val lineStartOffset = editor.document.getLineStartOffset(line)
 
-                    val isFoldedRegionInBoundsOfVisibleText = endOffset < visibleText.length
+                    val isFoldedRegionInBoundsOfVisibleText = endOffset < visibleText.length && lineStartOffset < visibleText.length
                     if (isFoldedRegionInBoundsOfVisibleText) {
                         mutableText = mutableText.replace(visibleText.substring(lineStartOffset, endOffset), "")
                     }
