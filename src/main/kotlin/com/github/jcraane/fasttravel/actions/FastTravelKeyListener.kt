@@ -14,15 +14,24 @@ class FastTravelKeyListener(
     var fastTravelIdentifierPanel: FastTravelIdentifierPanel? = null
     var fastTravelMapping: Map<String, Int>? = null
 
+    private var numberOfKeyPresses = 0
+    private var pressedIdentifier = ""
+
     override fun keyTyped(e: KeyEvent) {
         e.consume()
-        fastTravelToIdentifier(e.keyChar)
-        removeFastTravelIdentifierPanel()
-        fastTravelAction.restoreKeyListeners()
+        if (numberOfKeyPresses == 0) {
+            pressedIdentifier += e.keyChar
+            numberOfKeyPresses++
+        } else {
+            pressedIdentifier += e.keyChar
+            fastTravelToIdentifier(pressedIdentifier)
+            removeFastTravelIdentifierPanel()
+            fastTravelAction.restoreKeyListeners()
+        }
     }
 
-    private fun fastTravelToIdentifier(keyChar: Char) {
-        val offset = fastTravelMapping?.get(keyChar.toString())
+    private fun fastTravelToIdentifier(identifier: String) {
+        val offset = fastTravelMapping?.get(pressedIdentifier)
         if (offset != null) {
             ApplicationManager.getApplication().runReadAction(FastTravelRunnable(editor, offset))
         }
@@ -38,6 +47,8 @@ class FastTravelKeyListener(
 
     @OptIn(kotlin.ExperimentalStdlibApi::class)
     fun removeFastTravelIdentifierPanel() {
+        numberOfKeyPresses = 0
+        pressedIdentifier = ""
         editor.contentComponent.removeKeyListener(this)
         val parent = fastTravelIdentifierPanel?.parent
         parent?.remove(fastTravelIdentifierPanel)

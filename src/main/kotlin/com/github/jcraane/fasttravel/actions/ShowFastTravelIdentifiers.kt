@@ -71,8 +71,6 @@ class ShowFastTravelIdentifiers(
     }
 
     companion object {
-        private val LOG = logger<FastTravelAction>()
-
         val ignoredIdentifiers = listOf("import")
     }
 }
