@@ -1,9 +1,12 @@
 package com.github.jcraane.fasttravel.actions.identifier
 
-class DoubleCharIdentifierGenerator : IdentifierGenerator {
+class DoubleCharIdentifierGenerator(
+    private val initialMajor: Char = start,
+    private val initialMinor: Char = start,
+) : IdentifierGenerator {
     // Start identifier = aa
-    private var currentMajor = start
-    private var currentMinor = start
+    private var currentMajor = initialMajor
+    private var currentMinor = initialMinor
 
     override fun hasNext(): Boolean = "$currentMajor$currentMinor" != end
 

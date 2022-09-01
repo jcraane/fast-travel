@@ -14,4 +14,11 @@ class DoubleCharIdentifierGeneratorTest {
         assertEquals("ad", generator.next())
         assertEquals("ae", generator.next())
     }
+
+    @Test
+    fun verifyCorrectTransitionToNewMajor() {
+        val generator = DoubleCharIdentifierGenerator(initialMajor = 'a', initialMinor = 'z')
+        assertEquals("az", generator.next())
+        assertEquals("ba", generator.next())
+    }
 }
