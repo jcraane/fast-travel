@@ -1,5 +1,7 @@
 package com.github.jcraane.fasttravel.actions
 
+import com.github.jcraane.fasttravel.actions.identifier.DoubleCharIdentifierGenerator
+import com.github.jcraane.fasttravel.actions.identifier.OneCharIdentifierGenerator
 import com.github.jcraane.fasttravel.extensions.getVisibleTextRange
 import com.github.jcraane.fasttravel.renderer.FastTravelIdentifierPanel
 import com.intellij.openapi.diagnostic.logger
@@ -12,7 +14,9 @@ class ShowFastTravelIdentifiers(
     private val editor: Editor,
     private val fastTravelKeyListener: FastTravelKeyListener,
 ) : Runnable {
-    private val fastTravelMapper = IdentifierToFastTravelMapper()
+    private val fastTravelMapper = IdentifierToFastTravelMapper(
+        identifierGenerator = DoubleCharIdentifierGenerator()
+    )
 
     override fun run() {
         val visibleTextRange = editor.getVisibleTextRange()
@@ -69,10 +73,6 @@ class ShowFastTravelIdentifiers(
     companion object {
         private val LOG = logger<FastTravelAction>()
 
-        private val numbers = (0..9).toList().map { it.toString() }
-        private val upperCase = ('A'..'Z').toList().map { it.toString() }
-        private val lowerCase = ('a'..'z').toList().map { it.toString() }
-        val identifiers = lowerCase + upperCase + numbers
         val ignoredIdentifiers = listOf("import")
     }
 }

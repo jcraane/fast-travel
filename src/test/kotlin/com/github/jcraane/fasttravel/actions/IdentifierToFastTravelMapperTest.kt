@@ -1,11 +1,14 @@
 package com.github.jcraane.fasttravel.actions
 
+import com.github.jcraane.fasttravel.actions.identifier.OneCharIdentifierGenerator
 import com.intellij.openapi.util.TextRange
 import org.junit.Assert
 import org.junit.Test
 
 class IdentifierToFastTravelMapperTest {
-    private val mapper = IdentifierToFastTravelMapper()
+    private val mapper = IdentifierToFastTravelMapper(
+        identifierGenerator = OneCharIdentifierGenerator(),
+    )
 
     @Test
     fun mapIdentifiersInTextWithoutFoldedRegions() {
