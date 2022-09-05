@@ -21,6 +21,7 @@ class IdentifierToFastTravelMapper(
         visibleText: String,
         foldedRegionRanges: List<TextRange>,
         visibleTextRange: TextRange,
+        minWordLength: Int,
     ): Map<String, Int> {
         // Identifiers are based on the visible text (without the folded regions) to make sure the indexes are based on the correct
         // offsets in the editor. Ignore special characters link < " etc.
@@ -30,7 +31,7 @@ class IdentifierToFastTravelMapper(
             .distinct()
             .filter { it.isNotBlank() }
             .filter { ShowFastTravelIdentifiers.ignoredIdentifiers.contains(it).not() }
-            .filter { it.length > MIN_WORD_LENGTH }
+            .filter { it.length >= minWordLength }
             .map { it.trim('\n', '(', ')', '$', '#', '{', '}', '[', ']', ';') }
             .toList()
 
@@ -72,9 +73,5 @@ class IdentifierToFastTravelMapper(
         } else {
             null
         }
-    }
-
-    companion object {
-        private const val MIN_WORD_LENGTH = 5
     }
 }

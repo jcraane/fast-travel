@@ -23,7 +23,8 @@ class IdentifierToFastTravelMapperTest {
             unfoldedText = text,
             visibleText = text,
             foldedRegionRanges = emptyList(),
-            visibleTextRange = TextRange(0, text.length)
+            visibleTextRange = TextRange(0, text.length),
+            5,
         )
 
         Assert.assertEquals(mappings.values.sorted(), mappings.values.map { it })
@@ -40,7 +41,8 @@ class IdentifierToFastTravelMapperTest {
             unfoldedText = unfoldedText,
             visibleText = visibleText,
             foldedRegionRanges = listOf(TextRange(54, 435)),
-            visibleTextRange = TextRange(0, 1986)
+            visibleTextRange = TextRange(0, 1986),
+            5,
         )
 
         println(mappings)

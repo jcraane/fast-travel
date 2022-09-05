@@ -9,11 +9,10 @@ import javax.swing.JComponent
 
 class FastTravelIdentifierPanel(
     private val editor: Editor,
-    private val fastTravelers: Map<String, Int>
+    private val fastTravelers: Map<String, Int>,
+    private val foregroundColor: JBColor,
+    private val backgroundColor: JBColor,
 ) : JComponent() {
-
-    private val background = JBColor(Color(32, 147, 227), Color(32, 147, 227))
-    private val foreground = JBColor(Color(249, 255, 249), Color(232, 232, 225))
 
     init {
         this.setLocation(0, 0)
@@ -31,8 +30,8 @@ class FastTravelIdentifierPanel(
         fastTravelers.forEach { entry ->
             val offset = entry.value
             val fontRect = fontMetrics.getStringBounds(entry.key, graphics)
-            drawBackground(graphics, getX(offset), getY(offset), background, fontRect)
-            drawMarkerChar(graphics, getX(offset), getY(offset) + font.size * 1.2, entry.key, foreground)
+            drawBackground(graphics, getX(offset), getY(offset), backgroundColor, fontRect)
+            drawMarkerChar(graphics, getX(offset), getY(offset) + font.size * 1.2, entry.key, foregroundColor)
         }
 
         super.paint(graphics)

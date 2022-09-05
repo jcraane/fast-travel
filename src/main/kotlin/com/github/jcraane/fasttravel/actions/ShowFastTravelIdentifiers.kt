@@ -2,6 +2,7 @@ package com.github.jcraane.fasttravel.actions
 
 import com.github.jcraane.fasttravel.actions.identifier.DoubleCharIdentifierGenerator
 import com.github.jcraane.fasttravel.actions.identifier.OneCharIdentifierGenerator
+import com.github.jcraane.fasttravel.configuration.FastTravelSettingsState
 import com.github.jcraane.fasttravel.extensions.getVisibleTextRange
 import com.github.jcraane.fasttravel.renderer.FastTravelIdentifierPanel
 import com.intellij.openapi.diagnostic.logger
@@ -19,6 +20,7 @@ class ShowFastTravelIdentifiers(
     )
 
     override fun run() {
+        val config = FastTravelSettingsState.getInstance()
         val visibleTextRange = editor.getVisibleTextRange()
         val allText = editor.document.getText(visibleTextRange)
         val visibleText = removeFoldedRegions(allText, visibleTextRange)
@@ -30,10 +32,11 @@ class ShowFastTravelIdentifiers(
             allText,
             visibleText.first,
             foldedRegionRanges,
-            visibleTextRange
+            visibleTextRange,
+            config.minWordLength,
         )
 
-        val fastTravelIdentifierPanel = FastTravelIdentifierPanel(editor, mapping)
+        val fastTravelIdentifierPanel = FastTravelIdentifierPanel(editor, mapping, config.getForeGroundColor(), config.getBackgroundColor())
         fastTravelKeyListener.removeFastTravelIdentifierPanel()
 
         fastTravelKeyListener.fastTravelMapping = mapping

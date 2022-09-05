@@ -3,6 +3,7 @@ package com.github.jcraane.fasttravel.configuration
 import com.intellij.openapi.options.Configurable
 import com.intellij.ui.ColorPanel
 import com.intellij.ui.JBColor
+import com.intellij.ui.components.JBTextField
 import com.intellij.ui.layout.panel
 import java.awt.Color
 import javax.swing.JComponent
@@ -10,7 +11,7 @@ import javax.swing.JPanel
 
 class FastTravelConfigurable : Configurable {
     private lateinit var settingsPanel: JPanel
-    private var minWordLength: Int = FastTravelSettingsState.DEFAULT_MIN_WORD_LENGTH
+    private var minWordLength = JBTextField()
     private val backgroundColorPanel: ColorPanel = ColorPanel()
     private val foregroundColorPanel: ColorPanel = ColorPanel()
 
@@ -20,21 +21,16 @@ class FastTravelConfigurable : Configurable {
         settingsPanel = JPanel()
         return createFromConfig()
     }
+
     private fun createFromConfig(): JComponent {
         backgroundColorPanel.selectedColor = JBColor(config.background, config.background)
         foregroundColorPanel.selectedColor = JBColor(config.foreground, config.foreground)
+        minWordLength.text = config.minWordLength.toString()
 
         settingsPanel = panel {
             row {
                 label(text = "Minimum wordt length")
-                intTextField(
-                    getter = {
-                        config.minWordLength
-                    },
-                    setter = {
-                        minWordLength = it
-                    }
-                )
+                component(minWordLength)
             }
 
             row {
@@ -52,7 +48,10 @@ class FastTravelConfigurable : Configurable {
 
     override fun isModified(): Boolean {
         var modified = false
-        modified = modified || minWordLength != config.minWordLength
+        val wordLength = minWordLength.text
+        if (wordLength.isNotBlank()) {
+            modified = modified || wordLength.toInt() != config.minWordLength
+        }
         modified = modified || backgroundColorPanel.selectedColor != Color(config.getBackgroundColor().rgb)
         modified = modified || foregroundColorPanel.selectedColor != Color(config.getForeGroundColor().rgb)
         return modified
@@ -63,7 +62,7 @@ class FastTravelConfigurable : Configurable {
             return
         }
 
-        config.minWordLength = minWordLength
+        config.minWordLength = minWordLength.text.toInt()
         config.background = backgroundColorPanel.selectedColor?.rgb ?: FastTravelSettingsState.DEFAULT_BACKGROUND.rgb
         config.foreground = foregroundColorPanel.selectedColor?.rgb ?: FastTravelSettingsState.DEFAULT_FOREGROUND.rgb
     }
