@@ -2,20 +2,17 @@ package com.github.jcraane.fasttravel.configuration
 
 import com.intellij.openapi.options.Configurable
 import com.intellij.ui.ColorPanel
-import com.intellij.ui.components.panels.HorizontalBox
-import com.intellij.ui.components.panels.VerticalBox
-import com.intellij.util.containers.concat
+import com.intellij.ui.JBColor
+import com.intellij.ui.layout.panel
 import java.awt.Color
 import javax.swing.JComponent
-import javax.swing.JLabel
 import javax.swing.JPanel
-import javax.swing.JTextField
 
 class FastTravelConfigurable : Configurable {
     private lateinit var settingsPanel: JPanel
-    private val minWordLength: JTextField = JTextField()
-    private val backgroundColor: ColorPanel = ColorPanel()
-    private val foregroundColor: ColorPanel = ColorPanel()
+    private var minWordLength: Int = FastTravelSettingsState.DEFAULT_MIN_WORD_LENGTH
+    private val backgroundColorPanel: ColorPanel = ColorPanel()
+    private val foregroundColorPanel: ColorPanel = ColorPanel()
 
     private val config: FastTravelSettingsState = FastTravelSettingsState.getInstance()
 
@@ -23,29 +20,41 @@ class FastTravelConfigurable : Configurable {
         settingsPanel = JPanel()
         return createFromConfig()
     }
-
     private fun createFromConfig(): JComponent {
-        settingsPanel = JPanel()
-        val root = VerticalBox()
+        backgroundColorPanel.selectedColor = JBColor(config.background, config.background)
+        foregroundColorPanel.selectedColor = JBColor(config.foreground, config.foreground)
 
-        val minWordLengthHolder = HorizontalBox()
-        minWordLengthHolder.add(JLabel().apply {
-            text = "Minimum word length"
-        })
-        minWordLengthHolder.add(minWordLengthHolder)
-        root.add(minWordLengthHolder)
-        settingsPanel.add(root)
+        settingsPanel = panel {
+            row {
+                label(text = "Minimum wordt length")
+                intTextField(
+                    getter = {
+                        config.minWordLength
+                    },
+                    setter = {
+                        minWordLength = it
+                    }
+                )
+            }
+
+            row {
+                label(text = "Background color")
+                this.component(backgroundColorPanel)
+            }
+
+            row {
+                label(text = "Foreground color")
+                this.component(foregroundColorPanel)
+            }
+        }
         return settingsPanel
     }
 
     override fun isModified(): Boolean {
         var modified = false
-        val minWords = minWordLength.text
-        if (minWords.isNotBlank()) {
-            modified = modified || minWordLength.text.toInt() != config.minWordLength
-        }
-        modified = modified || backgroundColor.selectedColor != Color(config.getBackgroundColor().rgb)
-        modified = modified || foregroundColor.selectedColor != Color(config.getForeGroundColor().rgb)
+        modified = modified || minWordLength != config.minWordLength
+        modified = modified || backgroundColorPanel.selectedColor != Color(config.getBackgroundColor().rgb)
+        modified = modified || foregroundColorPanel.selectedColor != Color(config.getForeGroundColor().rgb)
         return modified
     }
 
@@ -54,9 +63,9 @@ class FastTravelConfigurable : Configurable {
             return
         }
 
-        config.minWordLength = minWordLength.text.toInt()
-        config.background = backgroundColor.selectedColor?.rgb ?: FastTravelSettingsState.DEFAULT_BACKGROUND.rgb
-        config.foreground = foregroundColor.selectedColor?.rgb ?: FastTravelSettingsState.DEFAULT_FOREGROUND.rgb
+        config.minWordLength = minWordLength
+        config.background = backgroundColorPanel.selectedColor?.rgb ?: FastTravelSettingsState.DEFAULT_BACKGROUND.rgb
+        config.foreground = foregroundColorPanel.selectedColor?.rgb ?: FastTravelSettingsState.DEFAULT_FOREGROUND.rgb
     }
 
     override fun getDisplayName(): String {

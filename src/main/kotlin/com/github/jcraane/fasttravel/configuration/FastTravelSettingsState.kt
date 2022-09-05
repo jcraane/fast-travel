@@ -37,7 +37,7 @@ class FastTravelSettingsState : PersistentStateComponent<FastTravelSettingsState
     companion object {
         val DEFAULT_BACKGROUND = JBColor(Color(32, 147, 227), Color(32, 147, 227))
         val DEFAULT_FOREGROUND = JBColor(Color(249, 255, 249), Color(232, 232, 225))
-        private const val DEFAULT_MIN_WORD_LENGTH = 5
+        const val DEFAULT_MIN_WORD_LENGTH = 5
         fun getInstance() = ServiceManager.getService(FastTravelSettingsState::class.java)
     }
 }
