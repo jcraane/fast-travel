@@ -1,7 +1,7 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
     <id>com.github.jcraane.fasttravel</id>
-    <name>fast-travel</name>
+    <name>Fast Travel</name>
     <vendor>jcraane</vendor>
 
     <depends>com.intellij.modules.platform</depends>
@@ -17,9 +17,9 @@
     </applicationListeners>
 
     <actions>
-        <group id="fastTravel" text="Fast Travel" description="fastTravel">
-            <action id="fastTravel.jumper" class="com.github.jcraane.fasttravel.actions.FastTravelAction" text="Jumper"
-                    description="Jumper">
+        <group id="fastTravel" text="Fast Travel" description="FastTravel is a plugin which enables quick navigation to any place in the editor with minimal keystrokes. Press alt + l which shows places to jump to. Type the keys of the identifier to navigate to that location.">
+            <action id="fastTravel.jumper" class="com.github.jcraane.fasttravel.actions.FastTravelAction" text="FastTravel"
+                    description="FastTravel">
                 <keyboard-shortcut first-keystroke="alt l" keymap="$default"/>
             </action>
         </group>
