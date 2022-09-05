@@ -29,7 +29,7 @@ class FastTravelConfigurable : Configurable {
 
         settingsPanel = panel {
             row {
-                label(text = "Minimum wordt length")
+                label(text = "Minimum word length")
                 component(minWordLength)
             }
 
