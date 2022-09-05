@@ -25,7 +25,7 @@ class IdentifierToFastTravelMapper(
         // Identifiers are based on the visible text (without the folded regions) to make sure the indexes are based on the correct
         // offsets in the editor. Ignore special characters link < " etc.
         val interestingIdentifiers = visibleText
-            .split(' ', '.')
+            .split(' ', '.', '(', ')')
             .asSequence()
             .distinct()
             .filter { it.isNotBlank() }

@@ -18,9 +18,20 @@
 
     <actions>
         <group id="fastTravel" text="Fast Travel" description="fastTravel">
-            <action id="fastTravel.jumper" class="com.github.jcraane.fasttravel.actions.FastTravelAction" text="Jumper" description="Jumper">
+            <action id="fastTravel.jumper" class="com.github.jcraane.fasttravel.actions.FastTravelAction" text="Jumper"
+                    description="Jumper">
                 <keyboard-shortcut first-keystroke="alt l" keymap="$default"/>
             </action>
         </group>
     </actions>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <applicationConfigurable
+                instance="com.github.jcraane.fasttravel.configuration.FastTravelConfigurable"
+                id="com.github.jcraane.fasttravel.configuration.FastTravelConfigurable"
+                displayName="FastTravel"/>
+
+        <applicationService serviceImplementation="com.github.jcraane.fasttravel.configuration.FastTravelSettingsState"
+                            serviceInterface="com.github.jcraane.fasttravel.configuration.FastTravelSettingsState"/>
+    </extensions>
 </idea-plugin>
