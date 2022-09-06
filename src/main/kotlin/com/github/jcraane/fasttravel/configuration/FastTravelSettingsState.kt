@@ -22,6 +22,8 @@ class FastTravelSettingsState : PersistentStateComponent<FastTravelSettingsState
     var minWordLength: Int = DEFAULT_MIN_WORD_LENGTH
     var background: Int = DEFAULT_BACKGROUND.rgb
     var foreground: Int = DEFAULT_FOREGROUND.rgb
+    // When true, split words using camel case, so NavigationController is split in Navigation and Controller instead NavigationController.
+    var useCamelHump: Boolean = false
 
     fun getBackgroundColor() = JBColor(background, background)
     fun getForeGroundColor() = JBColor(foreground, foreground)

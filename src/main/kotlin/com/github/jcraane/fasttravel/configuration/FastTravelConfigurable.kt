@@ -5,7 +5,9 @@ import com.intellij.ui.ColorPanel
 import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBTextField
 import com.intellij.ui.layout.panel
+import com.intellij.ui.layout.selected
 import java.awt.Color
+import javax.swing.JCheckBox
 import javax.swing.JComponent
 import javax.swing.JPanel
 
@@ -14,6 +16,7 @@ class FastTravelConfigurable : Configurable {
     private var minWordLength = JBTextField()
     private val backgroundColorPanel: ColorPanel = ColorPanel()
     private val foregroundColorPanel: ColorPanel = ColorPanel()
+    private val camelHumps = JCheckBox()
 
     private val config: FastTravelSettingsState = FastTravelSettingsState.getInstance()
 
@@ -26,11 +29,17 @@ class FastTravelConfigurable : Configurable {
         backgroundColorPanel.selectedColor = JBColor(config.background, config.background)
         foregroundColorPanel.selectedColor = JBColor(config.foreground, config.foreground)
         minWordLength.text = config.minWordLength.toString()
+        camelHumps.isSelected = config.useCamelHump
 
         settingsPanel = panel {
             row {
                 label(text = "Minimum word length")
                 component(minWordLength)
+            }
+
+            row {
+                label(text = "Use CamelHumps")
+                component(camelHumps)
             }
 
             row {
@@ -54,6 +63,7 @@ class FastTravelConfigurable : Configurable {
         }
         modified = modified || backgroundColorPanel.selectedColor != Color(config.getBackgroundColor().rgb)
         modified = modified || foregroundColorPanel.selectedColor != Color(config.getForeGroundColor().rgb)
+        modified = modified || camelHumps.isSelected != config.useCamelHump
         return modified
     }
 
@@ -65,6 +75,7 @@ class FastTravelConfigurable : Configurable {
         config.minWordLength = minWordLength.text.toInt()
         config.background = backgroundColorPanel.selectedColor?.rgb ?: FastTravelSettingsState.DEFAULT_BACKGROUND.rgb
         config.foreground = foregroundColorPanel.selectedColor?.rgb ?: FastTravelSettingsState.DEFAULT_FOREGROUND.rgb
+        config.useCamelHump = camelHumps.isSelected
     }
 
     override fun getDisplayName(): String {

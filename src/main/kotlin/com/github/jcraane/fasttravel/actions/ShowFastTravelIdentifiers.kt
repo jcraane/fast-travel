@@ -29,11 +29,12 @@ class ShowFastTravelIdentifiers(
             .map { it.range }
 
         val mapping = fastTravelMapper.getFastTravelMappings(
-            allText,
-            visibleText.first,
-            foldedRegionRanges,
-            visibleTextRange,
-            config.minWordLength,
+            unfoldedText = allText,
+            visibleText = visibleText.first,
+            foldedRegionRanges = foldedRegionRanges,
+            visibleTextRange = visibleTextRange,
+            minWordLength = config.minWordLength,
+            useCamelHumps = config.useCamelHump,
         )
 
         val fastTravelIdentifierPanel = FastTravelIdentifierPanel(editor, mapping, config.getForeGroundColor(), config.getBackgroundColor())

@@ -4,6 +4,7 @@ import com.github.jcraane.fasttravel.actions.identifier.IdentifierGenerator
 import com.github.jcraane.fasttravel.extensions.allIndicesOf
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.impl.source.tree.injected.changesHandler.range
+import java.util.regex.Pattern
 
 // todo optimize splits and word length (make it even configurable in settings?)
 // todo Use modifiers to increase keys to press (or combination of keys like AB). But then you cannot have a single key of A. Modifier
@@ -22,12 +23,17 @@ class IdentifierToFastTravelMapper(
         foldedRegionRanges: List<TextRange>,
         visibleTextRange: TextRange,
         minWordLength: Int,
+        useCamelHumps: Boolean,
     ): Map<String, Int> {
         // Identifiers are based on the visible text (without the folded regions) to make sure the indexes are based on the correct
         // offsets in the editor. Ignore special characters link < " etc.
         val interestingIdentifiers = visibleText
             .split(' ', '.', '(', ')')
             .asSequence()
+            .map { it ->
+                splitCamelCase(it, useCamelHumps)
+            }
+            .flatten()
             .distinct()
             .filter { it.isNotBlank() }
             .filter { ShowFastTravelIdentifiers.ignoredIdentifiers.contains(it).not() }
@@ -48,6 +54,14 @@ class IdentifierToFastTravelMapper(
         }
 
         return mapping.groupBy { it.identifier }.mapValues { it.value.first().offset }
+    }
+
+    private fun splitCamelCase(text: String, useCamelHumps: Boolean): List<String> {
+        return if (useCamelHumps) {
+            text.split(camelCaseSplitRegex)
+        } else {
+            listOf(text)
+        }
     }
 
     /**
@@ -73,5 +87,9 @@ class IdentifierToFastTravelMapper(
         } else {
             null
         }
+    }
+
+    companion object {
+        private val camelCaseSplitRegex = Pattern.compile("(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])")
     }
 }
