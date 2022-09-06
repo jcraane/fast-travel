@@ -8,11 +8,11 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <applicationService serviceImplementation="com.github.jcraane.fasttravel.services.MyApplicationService"/>
-        <projectService serviceImplementation="com.github.jcraane.fasttravel.services.MyProjectService"/>
+        <projectService serviceImplementation="com.github.jcraane.fasttravel.services.FastTravelProjectService"/>
     </extensions>
 
     <applicationListeners>
-        <listener class="com.github.jcraane.fasttravel.listeners.MyProjectManagerListener"
+        <listener class="com.github.jcraane.fasttravel.listeners.FastTravelManagerListener"
                   topic="com.intellij.openapi.project.ProjectManagerListener"/>
     </applicationListeners>
 
