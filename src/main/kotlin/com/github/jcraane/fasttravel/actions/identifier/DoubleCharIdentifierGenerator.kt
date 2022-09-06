@@ -1,8 +1,12 @@
 package com.github.jcraane.fasttravel.actions.identifier
 
+/**
+ * Generator which uses double char identifiers starting and aa and increasing to zz. Identifiers are consecutive: aa, ab, ac, etc.
+ * When az is reached, the next identifier is ba.
+ */
 class DoubleCharIdentifierGenerator(
-    private val initialMajor: Char = start,
-    private val initialMinor: Char = start,
+    initialMajor: Char = start,
+    initialMinor: Char = start,
 ) : IdentifierGenerator {
     // Start identifier = aa
     private var currentMajor = initialMajor
