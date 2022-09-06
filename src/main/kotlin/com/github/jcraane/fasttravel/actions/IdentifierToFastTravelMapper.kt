@@ -80,7 +80,6 @@ class IdentifierToFastTravelMapper(
             foldedRegion.range.contains(indexForIdentifier)
         }
 
-//        return if (indexPresentInVisibleRange && index < ShowFastTravelIdentifiers.identifiers.size) {
         return if (indexPresentInVisibleRange && identifierGenerator.hasNext()) {
             val offset = visibleTextRange.startOffset + indexForIdentifier
             FastTravel(identifierGenerator.next(), offset)
