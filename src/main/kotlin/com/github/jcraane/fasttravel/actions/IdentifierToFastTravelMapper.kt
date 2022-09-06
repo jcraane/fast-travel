@@ -6,11 +6,6 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.impl.source.tree.injected.changesHandler.range
 import java.util.regex.Pattern
 
-// todo optimize splits and word length (make it even configurable in settings?)
-// todo Use modifiers to increase keys to press (or combination of keys like AB). But then you cannot have a single key of A. Modifier
-//  key for example is Alt|Option+char. How do we visualize this? With the symbol of the key itself (⌥)? Or always two chars. -> AA, AB,
-//  AC etc?
-// todo Exclude comments (we might still need the psi here to exclude them)
 class IdentifierToFastTravelMapper(
     private val identifierGenerator: IdentifierGenerator,
 ) {
