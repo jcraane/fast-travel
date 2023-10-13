@@ -12,5 +12,9 @@
 
 - Compatibility with IntelliJ 2023.2
 
+## [0.0.5] - 2023-10-13
+
+- Compatibility with IntelliJ 2023.3
+
 ### Added
 - Initial version of the Fast Travel plugin
