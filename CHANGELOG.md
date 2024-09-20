@@ -20,5 +20,9 @@
 
 - Compatibility with IntelliJ 2024.2
 
+## [1.0.2] - 2024-09-20
+
+- Remove until build
+
 ### Added
 - Initial version of the Fast Travel plugin
